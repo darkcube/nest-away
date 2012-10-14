@@ -1,6 +1,6 @@
 #! /usr/bin/python
 
-# nest_away.py -- a python script to set a Nest Thermostat away based on
+# nest-away.py -- a python script to set a Nest Thermostat away based on
 # Google Latitude location.
 #
 # by Timothy Lusk, darkcube@gmail.com
@@ -64,8 +64,8 @@ def is_home( home_latitude, home_longitude, latitude_keys):
         
         dist = distance.distance((home_latitude, home_longitude), location.coordinates()).meters
         dist = max( dist - location.accuracy(), 0 )
-        if( units.miles( meters = dist ) < 1 ):
-            return True            
+        if( units.miles( meters = dist ) < 0.25 ):
+            return True
     
     return False
 
