@@ -1,0 +1,12 @@
+[Settings]
+nest_username = my-email-address
+nest_password = my-nest-password
+home_latitude = my-home-latitude
+home_longitude = my-house-longitude
+latitude_keys = ["latitudebridge-key-1", "latitudebridge-key-2"]
+pushover_enabled = False
+pushover_app_token = my-pushover-application-token
+pushover_user_token = my-pushover-user-token
+
+[Cache]
+previously_home = False
