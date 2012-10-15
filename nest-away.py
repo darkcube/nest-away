@@ -70,7 +70,6 @@ def is_home( home_latitude, home_longitude, latitude_keys):
     return False
 
 def set_home( nest_username, nest_password, home ):
-
     try:
         nest = Nest(nest_username, nest_password)
         nest.login()
@@ -78,11 +77,14 @@ def set_home( nest_username, nest_password, home ):
     except:
         print "Error logging into home.nest.com"
         sys.exit(-1)
-    
-    if( home ):
-        nest.set_away("home")
-    else:
-        nest.set_away("away")
+
+    nest_home = not nest.get_curaway()
+
+    if( nest_home != home ):
+        if( home ):
+            nest.set_away("home")
+        else:
+            nest.set_away("away")
 
 def send_notification( pushover_app_token, pushover_user_token, home ):
     pushover_args = {}

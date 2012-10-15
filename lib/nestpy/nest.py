@@ -110,11 +110,17 @@ class Nest:
         for k in sorted(allvars.keys()):
              print k + "."*(32-len(k)) + ":", allvars[k]
 
-    def show_curtemp(self):
+    def get_curtemp(self):
         temp = self.status["shared"][self.serial]["current_temperature"]
         temp = self.temp_out(temp)
 
-        print "%0.1f" % temp
+        return "%0.1f" % temp
+
+    def get_curhumid(self):
+        return self.status["device"][self.serial]["current_humidity"]
+
+    def get_curaway(self):
+        return self.status["structure"][self.structure_id]["away"]
 
     def set_temperature(self, temp):
         temp = self.temp_in(temp)
@@ -128,11 +134,11 @@ class Nest:
 
         res = urllib2.urlopen(req).read()
 
-        print res
+        return res
 
     def set_fan(self, state):
         data = '{"fan_mode":"' + str(state) + '"}'
-	print data
+
         req = urllib2.Request(self.transport_url + "/v2/put/device." + self.serial,
                               data,
                               {"user-agent":"Nest/1.1.0.10 CFNetwork/548.0.4",
@@ -141,15 +147,17 @@ class Nest:
 
         res = urllib2.urlopen(req).read()
 
-        print res
+        return res
 
     def set_away(self, state):
-	time_since_epoch   = time.time()
-	# time_since_epoch   = 1345299535
+        time_since_epoch   = time.time()
+        # time_since_epoch   = 1345299535
+
         if (state == "away"):
-		data = '{"away_timestamp":' + str(time_since_epoch) + ',"away":true,"away_setter":0}'
-	else:
-        	data = '{"away_timestamp":' + str(time_since_epoch) + ',"away":false,"away_setter":0}'
+            data = '{"away_timestamp":' + str(time_since_epoch) + ',"away":true,"away_setter":0}'
+        else:
+            data = '{"away_timestamp":' + str(time_since_epoch) + ',"away":false,"away_setter":0}'
+
         req = urllib2.Request(self.transport_url + "/v2/put/structure." + self.structure_id,
                               data,
                               {"user-agent":"Nest/1.1.0.10 CFNetwork/548.0.4",
@@ -157,6 +165,8 @@ class Nest:
                                "X-nl-protocol-version": "1"})
 
         res = urllib2.urlopen(req).read()
+
+        return res
 
 def create_parser():
    parser = OptionParser(usage="nest [options] command [command_options] [command_args]",
@@ -193,10 +203,11 @@ def help():
     print "commands: temp, fan, show, curtemp, curhumid"
     print "    temp <temperature>    ... set target temperature"
     print "    fan [auto|on]         ... set fan state"
-    print "    away [away|here]         ... set away state"
+    print "    away [away|here]      ... set away state"
     print "    show                  ... show everything"
     print "    curtemp               ... print current temperature"
     print "    curhumid              ... print current humidity"
+    print "    curaway               ... print current away state"
     print
     print "examples:"
     print "    nest.py --user joe@user.com --password swordfish temp 73"
@@ -234,15 +245,17 @@ def main():
         if len(args)<2:
             print "please specify a fan state of 'on' or 'auto'"
             sys.exit(-1)
-        n.set_fan(args[1])
+        print n.set_fan(args[1])
     elif (cmd == "show"):
         n.show_status()
     elif (cmd == "curtemp"):
-        n.show_curtemp()
+        print n.get_curtemp()
     elif (cmd == "curhumid"):
-        print n.status["device"][n.serial]["current_humidity"]
+        print n.get_curhumid()
+    elif (cmd == "curaway"):
+        print n.get_curaway()
     elif (cmd == "away"):
-        n.set_away(args[1])
+        print n.set_away(args[1])
     else:
         print "misunderstood command:", cmd
         print "do 'nest.py help' for help"
