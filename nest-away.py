@@ -124,6 +124,10 @@ def main():
         sys.exit(-1)
     
     home = is_home( home_latitude, home_longitude, latitude_keys )
+
+    if( home == previously_home ):
+        return
+
     set_home( nest_username, nest_password, home )
     
     if( pushover_enabled and ( previously_home != home ) ):
